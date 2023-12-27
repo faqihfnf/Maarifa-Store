@@ -43,27 +43,27 @@ document.addEventListener("click", function (e) {
   }
 });
 
-// ? Modal Box
+// // ? Modal Box
 
-const itemDetailModal = document.querySelector("#item-detail-modal");
+// const itemDetailModal = document.querySelector("#item-detail-modal");
 
-const itemDetailBtns = document.querySelectorAll(".item-detail-btn");
+// const itemDetailBtns = document.querySelectorAll(".item-detail-btn");
 
-itemDetailBtns.forEach((btn) => {
-  btn.onclick = (e) => {
-    itemDetailModal.style.display = "flex";
-    e.preventDefault();
-  };
-});
+// itemDetailBtns.forEach((btn) => {
+//   btn.onclick = (e) => {
+//     itemDetailModal.style.display = "flex";
+//     e.preventDefault();
+//   };
+// });
 
-//? Close Modal
-document.querySelector(".modal .close-icon").onclick = (e) => {
-  itemDetailModal.style.display = "none";
-  e.preventDefault();
-};
+// //? Close Modal
+// document.querySelector(".modal .close-icon").onclick = (e) => {
+//   itemDetailModal.style.display = "none";
+//   e.preventDefault();
+// };
 
-window.onclick = (e) => {
-  if (e.target == itemDetailModal) {
-    itemDetailModal.style.display = "none";
-  }
-};
+// window.onclick = (e) => {
+//   if (e.target == itemDetailModal) {
+//     itemDetailModal.style.display = "none";
+//   }
+// };

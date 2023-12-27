@@ -17,12 +17,18 @@
 
     <!--? Custom CSS  -->
     <link rel="stylesheet" href="css/style.css">
+
+    <!--? Alpine JS  -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!--? Script App Alpine JS -->
+    <script src="src/app.js"></script>
 </head>
 
 <body>
 
     <!--? Navbar Start  -->
-    <nav class="navbar">
+    <nav class="navbar" x-data>
         <a href="#" class="navbar-logo">Maarifa<span>Store</span></a>
 
         <div class="navbar-nav">
@@ -35,7 +41,9 @@
 
         <div class="navbar-extra">
             <a href="#" id="search-btn"><i data-feather="search"></i></a>
-            <a href="#" id="shooping-cart-btn"><i data-feather="shopping-cart"></i></a>
+            <a href="#" id="shooping-cart-btn"><i data-feather="shopping-cart"></i>
+                <span class="qty-badge" x-show="$store.cart.quantity" x-text="$store.cart.quantity"></span>
+            </a>
             <a href="#" id="hamburger-menu"><i data-feather="menu"></i></a>
         </div>
 
@@ -49,29 +57,44 @@
         <!--? Shooping Cart Start  -->
 
         <div class="shopping-cart">
-            <div class="cart-item">
-                <img src="img/products/madu-moringa-mesir.jpg" alt="Madu Moringa">
-                <div class="item-detail">
-                    <h3>Madu Moringa</h3>
-                    <div class="item-price">IDR.75K</div>
+            <template x-for="(item, index) in $store.cart.items" x-key="index">
+                <div class="cart-item">
+                    <img :src="`img/products/${item.img}`" :alt="item.name">
+                    <div class="item-detail">
+                        <h3 x-text="item.name"></h3>
+                        <div class="item-price">
+                            <span x-text="rupiah(item.price)"></span>&times;
+                            <button id="remove" @click="$store.cart.remove(item.id)">&minus;</button>
+                            <span x-text="item.quantity">1</span>
+                            <button id="add" @click="$store.cart.add(item)">&plus;</button> &equals;
+                            <span x-text="rupiah(item.total)"></span>
+                        </div>
+                    </div>
                 </div>
-                <i data-feather="trash-2" class="remove-item"></i>
-            </div>
-            <div class="cart-item">
-                <img src="img/products/madu-moringa-mesir.jpg" alt="Madu Moringa">
-                <div class="item-detail">
-                    <h3>Madu Moringa</h3>
-                    <div class="item-price">IDR.75K</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
-            </div>
-            <div class="cart-item">
-                <img src="img/products/madu-moringa-mesir.jpg" alt="Madu Moringa">
-                <div class="item-detail">
-                    <h3>Madu Moringa</h3>
-                    <div class="item-price">IDR.75K</div>
-                </div>
-                <i data-feather="trash-2" class="remove-item"></i>
+            </template>
+            <h4 x-show="!$store.cart.items.length">Keranjang Kosong</h4>
+            <h4 x-show="$store.cart.items.length">Total : <span x-text="rupiah($store.cart.total)"></span></h4>
+            <div class="form-container" x-show="$store.cart.items.length">
+                <form action="" id="checkoutForm">
+                    <h5>Customer Detail</h5>
+
+                    <label for="name">
+                        <span>Nama</span>
+                        <input type="text" name="name" id="name">
+                    </label>
+
+                    <label for="email">
+                        <span>Email</span>
+                        <input type="text" name="email" id="email">
+                    </label>
+
+                    <label for="phone">
+                        <span>No HP</span>
+                        <input type="number" name="phone" id="phone" autocomplete="off">
+                    </label>
+
+                    <button class="checkout-btn" type="button" id="checkout-btn" value="checkout">Pesan</button>
+                </form>
             </div>
         </div>
         <!--? Shooping Cart End  -->
@@ -131,71 +154,58 @@
     <!-- ? Menu End -->
 
     <!-- ? Products Start -->
-    <section id="products" class="products">
+    <section id="products" class="products" x-data="products">
         <h2><span>Produk</span> Kami</h2>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste, voluptatibus.</p>
 
         <div class="row">
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href="#"><i data-feather="shopping-cart"></i></a>
-                    <a href="#" class="item-detail-btn"><i data-feather="eye"></i></a>
-                </div>
-                <div class="product-image">
-                    <img src="img/products/madu-moringa-mesir.jpg" alt="">
-                </div>
-                <div class="product-content">
-                    <h3 class="product-title">Madu Moringa</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
+            <template x-for="(item, index) in items" x-key="index">
+                <div class="product-card">
+                    <div class="product-icons">
+                        <a href="#" @click.prevent="$store.cart.add(item)">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <use href="img/feather-sprite.svg#shopping-cart" />
+                            </svg>
+                        </a>
+                        <a href="#" class="item-detail-btn">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <use href="img/feather-sprite.svg#eye" />
+                            </svg>
+                        </a>
                     </div>
-                    <div class="product-price">IDR.100K <span>IDR.75K</span></div>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href="#"><i data-feather="shopping-cart"></i></a>
-                    <a href="#" class="item-detail-btn"><i data-feather="eye"></i></a>
-                </div>
-                <div class="product-image">
-                    <img src="img/products/madu-moringa-mesir.jpg" alt="">
-                </div>
-                <div class="product-content">
-                    <h3 class="product-title">Madu Moringa</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
-                        <i data-feather="star"></i>
+                    <div class="product-image">
+                        <img :src="`img/products/${item.img}`" :alt="item.name">
                     </div>
-                    <div class="product-price">IDR.100K <span>IDR.75K</span></div>
-                </div>
-            </div>
-            <div class="product-card">
-                <div class="product-icons">
-                    <a href="#"><i data-feather="shopping-cart"></i></a>
-                    <a href="#" class="item-detail-btn"><i data-feather="eye"></i></a>
-                </div>
-                <div class="product-image">
-                    <img src="img/products/madu-moringa-mesir.jpg" alt="">
-                </div>
-                <div class="product-content">
-                    <h3 class="product-title">Madu Moringa</h3>
-                    <div class="product-stars">
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star" class="star-full"></i>
-                        <i data-feather="star"></i>
-                        <i data-feather="star"></i>
-                        <i data-feather="star"></i>
+                    <div class="product-content">
+                        <h3 class="product-title" x-text="item.name"></h3>
+                        <div class="product-stars">
+                            <svg width="24" height="24" fill="yellow" stroke="yellow" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <use href="img/feather-sprite.svg#star" />
+                            </svg>
+                            <svg width="24" height="24" fill="yellow" stroke="yellow" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <use href="img/feather-sprite.svg#star" />
+                            </svg>
+                            <svg width="24" height="24" fill="yellow" stroke="yellow" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <use href="img/feather-sprite.svg#star" />
+                            </svg>
+                            <svg width="24" height="24" fill="yellow" stroke="yellow" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <use href="img/feather-sprite.svg#star" />
+                            </svg>
+                            <svg width="24" height="24" fill="yellow" stroke="yellow" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <use href="img/feather-sprite.svg#star" />
+                            </svg>
+                        </div>
+                        <div class="product-price"><span x-text="rupiah(item.price)"></span></div>
                     </div>
-                    <div class="product-price">IDR.100K <span>IDR.75K</span></div>
                 </div>
-            </div>
+            </template>
         </div>
     </section>
     <!-- ? Products End -->
@@ -251,7 +261,7 @@
     </footer>
     <!-- ? Footer End -->
 
-    <!--? Modal Boc Item Detail Product Start -->
+    <!--? Modal Box Item Detail Product Start -->
     <div class="modal" id="item-detail-modal">
         <div class="modal-container">
             <a href="#" class="close-icon"><i data-feather="x"></i></a>
@@ -274,7 +284,7 @@
             </div>
         </div>
     </div>
-    <!--? Modal Boc Item Detail Product End -->
+    <!--? Modal Box Item Detail Product End -->
 
     <!-- ? Feather Icons -->
     <script>
